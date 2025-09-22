@@ -1,0 +1,26 @@
+### Symfony ###
+/.env.local
+/.env.local.php
+/.env.*.local
+/config/secrets/prod/prod.decrypt.private.php
+/public/bundles/
+/var/
+/vendor/
+
+### Docker ###
+/.docker
+/docker-compose.override.yml
+/docker/.env
+*.log
+
+### IDEs ###
+.idea/
+/.vscode/
+/*.iml
+
+### Frontend (React) ###
+/frontend/node_modules/
+
+### Misc ###
+*.cache
+
