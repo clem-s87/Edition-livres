@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\DimensionRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\Livres;
 
 #[ORM\Entity(repositoryClass: DimensionRepository::class)]
 class Dimension
@@ -25,6 +26,10 @@ class Dimension
 
     #[ORM\Column(type: Types::DECIMAL, precision: 5, scale: 2, nullable: true)]
     private ?string $weight = null;
+
+    #[ORM\OneToOne(inversedBy: "dimension", targetEntity: Livres::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Livres $livre = null;
 
     public function getId(): ?int
     {
@@ -75,6 +80,18 @@ class Dimension
     public function setWeight(?string $weight): static
     {
         $this->weight = $weight;
+
+        return $this;
+    }
+
+    public function getLivre(): ?Livres
+    {
+        return $this->livre;
+    }
+
+    public function setLivre(Livres $livre): static
+    {
+        $this->livre = $livre;
 
         return $this;
     }
