@@ -32,16 +32,6 @@ class Users
     #[ORM\OneToMany(targetEntity: Fav::class, mappedBy: 'users', orphanRemoval: true)]
     private Collection $favs;
 
-    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'commandes')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?self $iduser = null;
-
-    /**
-     * @var Collection<int, self>
-     */
-    #[ORM\OneToMany(targetEntity: self::class, mappedBy: 'iduser')]
-    private Collection $commandes;
-
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private ?Role $role = null;
@@ -79,7 +69,6 @@ class Users
     {
         $this->createdAt = new \DateTimeImmutable();
         $this->favs = new ArrayCollection();
-        $this->commandes = new ArrayCollection();
     }
 
     public function getCreatedAt(): \DateTimeImmutable
@@ -111,48 +100,6 @@ class Users
             // set the owning side to null (unless already changed)
             if ($fav->getUsers() === $this) {
                 $fav->setUsers(null);
-            }
-        }
-
-        return $this;
-    }
-
-    public function getIduser(): ?self
-    {
-        return $this->iduser;
-    }
-
-    public function setIduser(?self $iduser): static
-    {
-        $this->iduser = $iduser;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, self>
-     */
-    public function getCommandes(): Collection
-    {
-        return $this->commandes;
-    }
-
-    public function addCommande(self $commande): static
-    {
-        if (!$this->commandes->contains($commande)) {
-            $this->commandes->add($commande);
-            $commande->setIduser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeCommande(self $commande): static
-    {
-        if ($this->commandes->removeElement($commande)) {
-            // set the owning side to null (unless already changed)
-            if ($commande->getIduser() === $this) {
-                $commande->setIduser(null);
             }
         }
 
