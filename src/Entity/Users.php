@@ -7,10 +7,15 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
+use App\State\UserProcessor;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity(repositoryClass: UsersRepository::class)]
-#[ApiResource]
-class Users
+#[ApiResource(
+    processor: UserProcessor::class
+)]
+class Users implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -36,6 +41,12 @@ class Users
     #[ORM\JoinColumn(nullable: false)]
     private ?Role $role = null;
 
+    public function __construct()
+    {
+        $this->createdAt = new \DateTimeImmutable();
+        $this->favs = new ArrayCollection();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -49,10 +60,10 @@ class Users
     public function setEmail(string $email): static
     {
         $this->email = $email;
-
         return $this;
     }
 
+    // PasswordAuthenticatedUserInterface
     public function getPassword(): ?string
     {
         return $this->password;
@@ -61,14 +72,7 @@ class Users
     public function setPassword(string $password): static
     {
         $this->password = $password;
-
         return $this;
-    }
-
-    public function __construct()
-    {
-        $this->createdAt = new \DateTimeImmutable();
-        $this->favs = new ArrayCollection();
     }
 
     public function getCreatedAt(): \DateTimeImmutable
@@ -90,19 +94,16 @@ class Users
             $this->favs->add($fav);
             $fav->setUsers($this);
         }
-
         return $this;
     }
 
     public function removeFav(Fav $fav): static
     {
         if ($this->favs->removeElement($fav)) {
-            // set the owning side to null (unless already changed)
             if ($fav->getUsers() === $this) {
                 $fav->setUsers(null);
             }
         }
-
         return $this;
     }
 
@@ -114,7 +115,27 @@ class Users
     public function setRole(?Role $role): static
     {
         $this->role = $role;
-
         return $this;
     }
+
+  // --- Méthodes obligatoires de UserInterface ---
+public function getUserIdentifier(): string
+{
+    return $this->email;
 }
+
+public function eraseCredentials(): void
+{
+    // Si tu avais un champ plainPassword temporaire, tu le viderais ici.
+    // Comme tu n’as pas de champ temporaire, tu peux laisser vide.
+}
+
+// ... ton code jusqu'à getRoles()
+
+public function getRoles(): array
+{
+    // Récupère le rôle pour Symfony, par défaut ROLE_USER
+    return [$this->role?->getName() ?? 'ROLE_USER'];
+}
+} // <-- fermeture de la classe Users
+

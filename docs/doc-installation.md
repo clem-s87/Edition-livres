@@ -15,3 +15,9 @@ API plateform : docker compose exec php composer require api
 Créer la base : docker compose exec php bin/console doctrine:database:create
 Créer une migration : docker compose exec php bin/console make:migration
 Appliquer une migration : docker compose exec php bin/console doctrine:migrations:migrate
+Aller dans la base : docker exec -it edition-livres-database-1 psql -U ... -d ... database
+
+
+<!-- API plateform -->
+
+http://localhost:8000/api
